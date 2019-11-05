@@ -1,5 +1,5 @@
 # nf-paired-crispr
 
-https://travis-ci.org/vaofford/nf-paired-crispr.svg?branch=master
+[![Build Status](https://travis-ci.org/vaofford/nf-paired-crispr.svg?branch=master)](https://travis-ci.org/vaofford/nf-paired-crispr)
 
 Docker for paired CRISPR pipelines
