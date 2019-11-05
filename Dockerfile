@@ -21,12 +21,23 @@ ENV VER_MULTIQC="1.7"
 
 RUN apt-get -yq update
 
+RUN apt-get update \
+  && apt-get install -y python3-pip python3-dev \
+  && cd /usr/local/bin \
+  && ln -s /usr/bin/python3 python \
+  && pip3 install --upgrade pip
+
 RUN apt-get install -yq --no-install-recommends \
+build-essential \
 git \
+unzip \
 curl \
-make \
-gcc \
-g++ 
+autoconf \
+zlib1g-dev \
+libbz2-dev \
+liblzma-dev \
+libcurl4-openssl-dev \
+libssl-dev
 
 RUN apt-get -yq update
 

@@ -71,15 +71,19 @@ if [ ! -e $SETUP_DIR/fqtools.success ]; then
 	curl -sSL --retry 10 -o distro.tar.gz https://github.com/alastair-droop/fqtools/archive/v${VER_FQTOOLS}.tar.gz
 	tar --strip-components 1 -C distro -xzf distro.tar.gz
   	cd distro
-  	curl -sSL --retry 10 -o distro.tar.gz https://github.com/samtools/htslib/archive/${VER_HTSLIB}.tar.gz
-	tar --strip-components 1 -C htslib -xzf distro.tar.gz
-  	cd htslib
+  	curl -sSL --retry 10 -o htslib.tar.gz https://github.com/samtools/htslib/archive/${VER_HTSLIB}.tar.gz
+	mkdir htslib
+	tar --strip-components 1 -C htslib -xzf htslib.tar.gz
+  	cd  htslib
+	autoheader
 	autoconf 
 	./configure
 	make
 	make install
 	cd ..
 	make
+	cd $SETUP_DIR
+	rm -rf distro.* distro/*
 	touch $SETUP_DIR/fqtools.success
 fi
 
