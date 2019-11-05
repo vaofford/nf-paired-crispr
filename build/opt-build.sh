@@ -53,18 +53,18 @@ set -u
 
 # FastQC
 if [ ! -e $SETUP_DIR/FastQC.success ]; then
-#  curl -sSL --retry 10 -o fastqc.zip http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${VER_FASTQC}.zip
-#  unzip -qu fastqc.zip -d $INST_PATH
-#  cd $INST_PATH/FastQC
-#  chmod +x fastqc
-#  cd $SETUP_DIR
-#  rm -rf fastqc.zip
+  curl -sSL --retry 10 -o fastqc.zip http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${VER_FASTQC}.zip
+  unzip -qu fastqc.zip -d $INST_PATH
+  cd $INST_PATH/FastQC
+  chmod +x fastqc
+  cd $SETUP_DIR
+  rm -rf fastqc.zip
   touch $SETUP_DIR/FastQC.success
 fi
 
 # MultiQC
 if [ ! -e $SETUP_DIR/MultiQC.success ]; then
-#  pip3 install multiqc==${VER_MULTIQC}
+  pip3 install multiqc==${VER_MULTIQC}
   touch $SETUP_DIR/MultiQC.success
 fi
 
