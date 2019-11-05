@@ -32,6 +32,8 @@ build-essential \
 git \
 unzip \
 curl \
+openjdk-8-jre \
+libx11-dev \
 autoconf \
 zlib1g-dev \
 libbz2-dev \
@@ -41,13 +43,13 @@ libssl-dev
 
 RUN apt-get -yq update
 
-RUN curl -L http://cpanmin.us | perl - App::cpanminus
+RUN curl -L http://cpanmin.us | perl - App::cpanminus 
 RUN cpanm Data::Dumper
 RUN cpanm Getopt::Long
 RUN cpanm File::Basename
 
 ENV OPT /opt/wsi-t113
-ENV PATH $OPT/bin:$OPT/FastQC:$PATH
+ENV PATH $OPT/bin:$OPT/FastQC:$OPT/fqtools/bin:$PATH
 ENV LD_LIBRARY_PATH $OPT/lib
 ENV PERL5LIB $OPT/lib/perl5
 
