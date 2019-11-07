@@ -51,6 +51,15 @@ export MANPATH=`echo $INST_PATH/man:$INST_PATH/share/man:$MANPATH | perl -pe 's/
 export PERL5LIB=`echo $INST_PATH/lib/perl5:$PERL5LIB | perl -pe 's/:\$//;'`
 set -u
 
+### Perl modules
+curl -L http://cpanmin.us | perl - App::cpanminus 
+if [ ! -e $SETUP_DIR/cpanm.success ]; then
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH Data::Dumper
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH Getopt::Long
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH File::Basename
+  touch $SETUP_DIR/cmpanm.success
+fi
+
 # FastQC
 if [ ! -e $SETUP_DIR/FastQC.success ]; then
   curl -sSL --retry 10 -o fastqc.zip http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${VER_FASTQC}.zip
@@ -64,7 +73,7 @@ fi
 
 # MultiQC
 if [ ! -e $SETUP_DIR/MultiQC.success ]; then
-  pip3 install multiqc==${VER_MULTIQC}
+  pip3 install --target=$INST_PATH/python3 multiqc==${VER_MULTIQC}
   touch $SETUP_DIR/MultiQC.success
 fi
 
@@ -81,7 +90,6 @@ if [ ! -e $SETUP_DIR/htslib.success ]; then
 	make install
 	cd $SETUP_DIR
 	rm -rf htslib.* htslib/*
-	find $INST_PATH -name "sam.h"
 	touch $SETUP_DIR/htslib.success
 fi
 
@@ -91,9 +99,6 @@ if [ ! -e $SETUP_DIR/fqtools.success ]; then
 	curl -sSL --retry 10 -o distro.tar.gz https://github.com/alastair-droop/fqtools/archive/v${VER_FQTOOLS}.tar.gz
 	tar --strip-components 1 -C $INST_PATH/fqtools  -xzf distro.tar.gz
   	cd $INST_PATH/fqtools
-	sed -i "3s:HTSDIR=\.\/htslib:HTSDIR=$INST_PATH\/htslib\/lib:" Makefile
-	sed -i "22s:htslib\/sam\.h:$INST_PATH\/include\/htslib\/sam\.h:" src/fqheader.h
-	cat src/fqheader.h
 	make
 	cd $SETUP_DIR
 	rm -rf distro.* distro/*
