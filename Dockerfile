@@ -55,11 +55,12 @@ RUN apt-get -yq update
 RUN apt-get install -yq --no-install-recommends \
 perl-modules \
 python3 \
+python3-distutils \
 openjdk-8-jre \
 libcurl4
 
 ENV OPT /opt/wsi-t113
-ENV PATH $OPT/bin:$OPT/FastQC:$OPT/fqtools/bin:$PATH
+ENV PATH $OPT/bin:$OPT/FastQC:$OPT/fqtools/bin:$OPT/python3/bin:$PATH
 ENV LD_LIBRARY_PATH $OPT/lib
 ENV PERL5LIB $OPT/lib/perl5
 ENV PYTHONPATH $OPT/python3
