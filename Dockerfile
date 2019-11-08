@@ -46,7 +46,7 @@ RUN bash build/opt-build.sh $OPT
 FROM ubuntu:18.04 
 
 LABEL maintainer="vo1@sanger.ac.uk" \
-      version="0.0.1" \
+      version="0.0.2" \
       description="nf-paired-crispr container"
 
 MAINTAINER  Victoria Offord <vo1@sanger.ac.uk>
