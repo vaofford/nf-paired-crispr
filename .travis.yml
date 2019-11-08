@@ -11,3 +11,4 @@ script:
  - echo 'Verify program(s) used by this repo'
  - docker run -t --rm nf-paired-crispr fastqc --help
  - docker run -t --rm nf-paired-crispr multiqc --help
+ - docker run -t --rm nf-paired-crispr fqtools -h 
