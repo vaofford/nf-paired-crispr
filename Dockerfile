@@ -42,6 +42,8 @@ ENV PERL5LIB $OPT/lib/perl5
 ADD build/opt-build.sh build/
 RUN bash build/opt-build.sh $OPT
 
+ADD perl/ perl/
+COPY perl/* $OPT/bin/
 
 FROM ubuntu:18.04 
 
