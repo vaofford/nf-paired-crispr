@@ -14,7 +14,7 @@ die ( "\n$usage\n\n") if ( $nn != 8);
 my($library_file, $fastq1, $fastq2, $sample_name);
 GetOptions ( "library=s"    => \$library_file,
              "fastq1=s"     => \$fastq1,
-     	       "fastq2=s"     => \$fastq2,
+             "fastq2=s"     => \$fastq2,
              "sample=s"     => \$sample_name )  
   or die("Error in command line arguments\n\n$usage\n");
 
@@ -30,12 +30,16 @@ my @fields = split(/\t/, $header);
 #locate the columns with the guide sequences
 $_=lc for @fields; #make all fields lower case
 
-#library file must have columns the following columns defined :
-# unique_id, target_id, sgrna_left_seq_id, sgrna_left_seg, sgrna_right_seq_id, sgrna_right_seg
+#library file must have the following columns defined :
+# unique_id, target_id, gener_pair_id, sgrna_left_seq_id, sgrna_left_seg, sgrna_right_seq_id, sgrna_right_seg
+#
+# unique_id, target_id, gener_pair_id are informative fields that get passed along to output reports
+
 my $i_sgrna_left;
 my $i_sgrna_left_id;
 my $i_sgrna_right;
 my $i_sgrna_right_id;
+my $i_gene_pair_id;
 my $i_unique_id;
 my $i_target_id;
 for my $i ( 0..$#fields )
@@ -45,6 +49,7 @@ for my $i ( 0..$#fields )
   $i_sgrna_right_id = $i if ( $fields[ $i ] eq "sgrna_right_id" );
   $i_sgrna_right = $i if ( $fields[ $i ] eq "sgrna_right_seq" );
   $i_unique_id = $i if ( $fields[ $i ] eq "unique_id" );
+  $i_gene_pair_id = $i if ( $fields[ $i ] eq "gene_pair_id" );
   $i_target_id = $i if ( $fields[ $i ] eq "target_id" );
   }
 die "Missing sgrna_left_id column. Check column labels\n\n" if ( not defined $i_sgrna_left_id);
@@ -54,6 +59,7 @@ die "Missing sgrna_left_seq column. Check column labels\n\n" if ( not defined $i
 die "Missing sgrna_right_seq column. Check column labels\n\n" if ( not defined $i_sgrna_right);
 
 die "Missing unique_id column. Check column labels\n\n" if ( not defined $i_unique_id );
+die "Missing gene_pair_id column. Check column labels\n\n" if ( not defined $i_gene_pair_id );
 die "Missing target_id column. Check column labels\n\n" if ( not defined $i_target_id );
 
 #Create various lookup dictionaries from the library file
@@ -78,7 +84,7 @@ while( <LIB> )
   $lookupGuideLeftRC{ $sgSeqLrc }  = undef; #undef saves memory
   $lookupGuideRightRC{ $sgSeqRrc } = undef;
 
-  #store the safe sequences (based on the guide id)
+  #store the safe sequences (guide id starts with F followed by a number)
   $lookupSafe{ $sgSeqL } = undef if ( $line[$i_sgrna_left_id]  =~ /^F\d+$/);
   $lookupSafe{ $sgSeqR } = undef if ( $line[$i_sgrna_right_id] =~ /^F\d+$/);
   
@@ -188,25 +194,26 @@ my $read_counts = $nline / 4;
 
 open(COUNTST,">$sample_name"."_classification_stats.tsv");
 print COUNTST "sample\ttotal_reads\tmiss\tmismatch\tgRNA1_hits\tgRNA2_hits\tsafe_safe\tgRNA1_safe\tsafe_gRNA2\tgRNA1_gRNA2\n";
-print COUNTST "$read_counts\t$n_miss_miss\t$n_incorrect_pair\t$n_grna1\t$n_grna2\t$n_safe_safe\t$n_grna1_safe\t$n_safe_grna2\t$n_grna1_grna2 \n";
+print COUNTST "$sample_name\t$read_counts\t$n_miss_miss\t$n_incorrect_pair\t$n_grna1\t$n_grna2\t$n_safe_safe\t$n_grna1_safe\t$n_safe_grna2\t$n_grna1_grna2 \n";
 
 
 open(LIB,"< $library_file") or die (  "Error processing $library_file\n");
 <LIB>;
 
 open(COUNT,">$sample_name".".counts.tsv");
-print COUNT "unique_id\ttarget_id\t$sample_name\n";
+print COUNT "unique_id\ttarget_id\tgene_pair_id\t$sample_name\n";
 while( <LIB> )
   {
   chomp;
   my @line = split(/\t/);
   my $sgSeqL = $line[$i_sgrna_left];
   my $sgSeqR = $line[$i_sgrna_right];
+  my $gene_pair_id = $line[$i_gene_pair_id];
   my $unique_pair_id = $line[$i_unique_id];
   my $target_pair_id = $line[$i_target_id];
   my $sgSeqLrc = &rc( $sgSeqL);
   my $counts = $lookupGuidePair{ $sgSeqLrc . $sgSeqR };
-  print COUNT "$unique_pair_id\t$target_pair_id\t$counts\n";
+  print COUNT "$unique_pair_id\t$target_pair_id\t$gene_pair_id\t$counts\n";
   }
 close(LIB);
 close(COUNT);
